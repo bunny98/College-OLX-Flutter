@@ -39,6 +39,7 @@ class _ProductNotificationResponseState
       'prodId': widget.product.id,
       'renterId': widget.request.userId,
       'sellerId': _sellerId,
+      'payment':'unpaid',
     });
     var docs = await Firestore.instance
         .collection("requests")

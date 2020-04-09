@@ -29,9 +29,10 @@ class _ProductsGridState extends State<ProductsGrid> {
         child: GridView.builder(
           padding: const EdgeInsets.all(10.0),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 1,
+            crossAxisCount: 2,
             mainAxisSpacing: 10,
-            childAspectRatio: 4 / 2,
+            childAspectRatio: 2.5 / 2,
+            crossAxisSpacing: 5,
           ),
           itemCount: loadedProducts.length,
           itemBuilder: (ctx, i) => ProductItemWidget(

@@ -45,6 +45,8 @@ class SplashScreenState extends State<SplashScreen> {
   }
 
   Widget build(BuildContext context) {
-    return CircularProgressIndicator();
+    return Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
   }
 }
