@@ -1,8 +1,8 @@
 # College OLX - A Flutter Application
 
-A local rentals app with streaming notifications and UPI payments integrated, specially designed for International Institute of Information Technology, Naya Raipur.
-State management is done using [Provider Package](https://pub.dev/packages/provider)
-Data is stored and retrived from [Google Firebase](https://firebase.google.com/)
+A local rentals app with streaming notifications and UPI payments integrated, specially designed for International Institute of Information Technology, Naya Raipur.  
+State management is done using [Provider Package](https://pub.dev/packages/provider)  
+Data is stored and retrived from [Google Firebase](https://firebase.google.com/)  
 
 ## Screenshots
 
