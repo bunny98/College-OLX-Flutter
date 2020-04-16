@@ -1,9 +1,8 @@
 # College OLX - A Flutter Application
 
-A local rentals app specially designed for International Institute of Information Technology, Naya Raipur.  
+A local rentals app with streaming notifications and UPI payments integrated, specially designed for International Institute of Information Technology, Naya Raipur.  
 
-## Getting Started
+## Screenshots
 
-This project is a starting point for a Flutter application.
-
+(/Pictures/1.png)
 
