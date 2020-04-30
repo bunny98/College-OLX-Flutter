@@ -2,7 +2,8 @@
 
 A local rentals app with streaming notifications and UPI payments integrated, specially designed for International Institute of Information Technology, Naya Raipur.  
 State management is done using [Provider Package](https://pub.dev/packages/provider)  
-Data is stored and retrived from [Google Firebase](https://firebase.google.com/)  
+Data is stored and retrived from [Google Firebase](https://firebase.google.com/)
+(https://github.com/bunny98/College-OLX-Flutter/blob/35648a5e67f5bc78b95228f5956199ee56c193b6/lib/screens/auth_screen.dart#L1-L8)
 
 ## Screenshots
 
