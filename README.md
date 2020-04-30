@@ -18,7 +18,7 @@ So fasten your seat belts and get ready for fluttering through *College OLX*
 <p align= "center">
 <img width="200" height="400" src="Pictures/1.png"><br>
 </p>
-# Gradient
+# Gradient  
 Starting with the gradient in background, it can be added using [*LinearGradient*](https://api.flutter.dev/flutter/painting/LinearGradient-class.html) widget inside *BoxDecoration*. I've used this *BoxDecoration* inside *Container* Widget in the following code snippet:
 ```dart
 Container(
