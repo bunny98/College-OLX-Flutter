@@ -150,6 +150,47 @@ The signIn method of Auth class, first signs in the user with given email and pa
     notifyListeners();
   }
 ```
+Similarly, the signUp function of Auth class, first creates a user in FirebaseAuth with given email and password, then stores other details such as name, address, etc. of the user to Firestore.
+```dart
+Future signUp(
+      {String email,
+      String password,
+      String name,
+      String address,
+      String mobNum}) async {
+    try {
+      // auth = new AuthData();
+      FirebaseUser currentUser = (await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: email, password: password)
+              .catchError((e) {
+        print("Singup ERROR" + e.code);
+        auth.errorMessage = e.code;
+      }))
+          .user;
+      auth.userId = currentUser.uid;
+      auth.errorMessage = null;
+      await Firestore.instance
+          .collection("users")
+          .document(currentUser.uid)
+          .setData({
+        'userId': currentUser.uid,
+        'name': name,
+        'address': address,
+        'mobNum': mobNum,
+      }).catchError((e) {
+        print("WRITING USER INFO ERROR" + e.code);
+      });
+      auth.userAddress = address;
+      auth.userMobile = mobNum;
+      auth.userName = name;
+    } catch (e) {}
+    notifyListeners();
+  }
+}
+```
+Note: Both of the above functions [*notifyListeners*](https://api.flutter.dev/flutter/foundation/ChangeNotifier/notifyListeners.html) at the end who are responsible for changing the state of the application.
+
+## Overview Screen
 
 ## Instructions for VS Code
 ### Run app without breakpoints
