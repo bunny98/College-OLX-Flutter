@@ -34,6 +34,39 @@ Container(
           ),
 ```
 
+### Red Box and Email-Pass Input Card
+The Red Box with *College OLX* inside, has been fashioned using [*Flexible*](https://api.flutter.dev/flutter/widgets/Flexible-class.html) widget to give it the ability to expand in the available space. Decoration part of the container used inside Flexible is pretty standard as can be seen in the below code snippet:  
+```dart
+Flexible(
+                    child: Container(
+                      margin: EdgeInsets.only(bottom: 20.0),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 94.0),
+                      // ..translate(-10.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.deepOrange.shade900,
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 8,
+                            color: Colors.black26,
+                            offset: Offset(0, 2),
+                          )
+                        ],
+                      ),
+                      child: Text(
+                        'CollegeOlx',
+                        style: TextStyle(
+                          color: Theme.of(context).accentTextTheme.title.color,
+                          fontSize: 30,
+                          fontFamily: 'Anton',
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  ),
+```
+
 ## Instructions for VS Code
 ### Run app without breakpoints
 Click Debug > Start Without Debugging in the main IDE window, or press Ctrl+F5. The status bar turns orange to show you are in a debug session
