@@ -14,6 +14,9 @@ Data is stored and retrived from [Google Firebase](https://firebase.google.com/)
 For those of you who don't know, [flutter](https://flutter.dev/) is an open-source UI software development kit created by Google. It is used to develop applications for Android, iOS, Windows, Mac, Linux, Google Fuchsia and the web. Google claims building beautiful native applications in record time, using flutter. And I couldn't agree more!  
 So fasten your seat belts and get ready for fluttering through *College OLX* 
 
+<img style="float: right;" src="Pictures/1.png" width="200" height="400"> For those of you who don't know, [flutter](https://flutter.dev/) is an open-source UI software development kit created by Google. It is used to develop applications for Android, iOS, Windows, Mac, Linux, Google Fuchsia and the web. Google claims building beautiful native applications in record time, using flutter. And I couldn't agree more!  
+So fasten your seat belts and get ready for fluttering through *College OLX* 
+
 ## Instructions for VS Code
 ### Run app without breakpoints
 Click Debug > Start Without Debugging in the main IDE window, or press Ctrl+F5. The status bar turns orange to show you are in a debug session
