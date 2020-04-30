@@ -11,7 +11,7 @@ Data is stored and retrived from [Google Firebase](https://firebase.google.com/)
 </p>
 
 ## Flutter
-For those of you who don't know, [flutter](https://flutter.dev/) is an open-source UI software development kit created by Google. It is <img style="float: right;" src="Pictures/1.png" width="200" height="400">used to develop applications for Android, iOS, Windows, Mac, Linux, Google Fuchsia and the web. Google claims building beautiful native applications in record time, using flutter. And I couldn't agree more!  
+For those of you who don't know, [flutter](https://flutter.dev/) is an open-source UI software development kit created by Google. It is <img style="float: left;" src="Pictures/1.png" width="200" height="400">used to develop applications for Android, iOS, Windows, Mac, Linux, Google Fuchsia and the web. Google claims building beautiful native applications in record time, using flutter. And I couldn't agree more!  
 So fasten your seat belts and get ready for fluttering through *College OLX* 
 
 ## Instructions for VS Code
