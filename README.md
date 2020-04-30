@@ -15,7 +15,7 @@ For those of you who don't know, [flutter](https://flutter.dev/) is an open-sour
 So fasten your seat belts and get ready for fluttering through *College OLX*
 
 ## Login/SignUp Screen
-<p align: "center">
+<p align= "center">
 <img width="200" height="400" src="Pictures/1.png"><br>
 </p>
 For those of you who don't know, [flutter](https://flutter.dev/) is an open-source UI software development kit created by Google. It is used to develop applications for Android, iOS, Windows, Mac, Linux, Google Fuchsia and the web. Google claims building beautiful native applications in record time, using flutter. And I couldn't agree more!  
