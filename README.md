@@ -10,17 +10,16 @@ Data is stored and retrived from [Google Firebase](https://firebase.google.com/)
   <img width="200" height="400" src="Pictures/1.png">&nbsp;&nbsp;&nbsp;&nbsp;<img src="Pictures/2.png" width="200" height="400">&nbsp;&nbsp;&nbsp;&nbsp;<img src="Pictures/3.png" width="200" height="400">&nbsp;&nbsp;&nbsp;&nbsp;<img src="Pictures/4.png" width="200" height="400">&nbsp;&nbsp;&nbsp;&nbsp;<img src="Pictures/5.png" width="200" height="400">&nbsp;&nbsp;&nbsp;&nbsp;
 </p>
 
-<div style="clear: both;">
-  <div style="float: left; margin-right 1em;">
-    <img src="Pictures/1.png" alt="" width="200" height="400">
-  </div>
-  <div>
-    <h2>Flutter</h2>
-    <p>For those of you who don't know, [flutter](https://flutter.dev/) is an open-source UI software development kit created by Google. It is used to develop applications for Android, iOS, Windows, Mac, Linux, Google Fuchsia and the web. Google claims building beautiful native applications in record time, using flutter. And I couldn't agree more!  
-So fasten your seat belts and get ready for fluttering through *College OLX* </p>
-  </div>
-</div>
+## Flutter
+For those of you who don't know, [flutter](https://flutter.dev/) is an open-source UI software development kit created by Google. It is used to develop applications for Android, iOS, Windows, Mac, Linux, Google Fuchsia and the web. Google claims building beautiful native applications in record time, using flutter. And I couldn't agree more!  
+So fasten your seat belts and get ready for fluttering through *College OLX*
 
+## Login/SignUp Screen
+<p align: "center">
+<img width="200" height="400" src="Pictures/1.png">  
+For those of you who don't know, [flutter](https://flutter.dev/) is an open-source UI software development kit created by Google. It is used to develop applications for Android, iOS, Windows, Mac, Linux, Google Fuchsia and the web. Google claims building beautiful native applications in record time, using flutter. And I couldn't agree more!  
+So fasten your seat belts and get ready for fluttering through *College OLX*
+</p>
 
 ## Instructions for VS Code
 ### Run app without breakpoints
