@@ -37,7 +37,11 @@ Container(
 ### Red Box and Email-Pass Input Card
 The Red Box with *College OLX* inside, has been fashioned using [*Flexible*](https://api.flutter.dev/flutter/widgets/Flexible-class.html) widget to give it the ability to expand in the available space. Decoration part of the container used inside Flexible is pretty standard as can be seen in the below code snippet:  
 ```dart
-Flexible(
+             child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Flexible(
                     child: Container(
                       margin: EdgeInsets.only(bottom: 20.0),
                       padding:
@@ -65,7 +69,15 @@ Flexible(
                       ),
                     ),
                   ),
+                  Flexible(
+                    flex: deviceSize.width > 600 ? 5 : 4,
+                    fit: FlexFit.loose,
+                    child: AuthCard(),
+                  ),
+                ],
+              ),
 ```
+AuthCard is a custom widget to display they contents of form field based on the selected auth type (i.e., Login or signup), inside the flexible widget.
 
 ## Instructions for VS Code
 ### Run app without breakpoints
