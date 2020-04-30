@@ -18,8 +18,20 @@ So fasten your seat belts and get ready for fluttering through *College OLX*
 <p align= "center">
 <img width="200" height="400" src="Pictures/1.png"><br>
 </p>
-For those of you who don't know, [flutter](https://flutter.dev/) is an open-source UI software development kit created by Google. It is used to develop applications for Android, iOS, Windows, Mac, Linux, Google Fuchsia and the web. Google claims building beautiful native applications in record time, using flutter. And I couldn't agree more!  
-So fasten your seat belts and get ready for fluttering through *College OLX*
+# Gradient
+Starting with the gradient in background, it can be added using [*LinearGradient*](https://api.flutter.dev/flutter/painting/LinearGradient-class.html) widget inside *BoxDecoration*. I've used this *BoxDecoration* inside *Container* Widget in the following code snippet:
+```dart
+Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.white, Colors.indigo],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [0, 1],
+              ),
+            ),
+          ),
+```
 
 ## Instructions for VS Code
 ### Run app without breakpoints
