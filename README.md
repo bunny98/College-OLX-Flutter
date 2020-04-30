@@ -79,6 +79,104 @@ The Red Box with *College OLX* inside, has been fashioned using [*Flexible*](htt
 ```
 AuthCard is a custom widget to display they contents of form field based on the selected auth type (i.e., Login or signup), inside the flexible widget.
 
+### Submit Button Functionality
+Now this is the heart of the login/signup page. [*Provider Package*](https://pub.dev/packages/provider) is used to manage state in College OLX. Though there are a number of state-management packages available, I chose provider for it's sheer simplicity and to strengthen my concepts of state management.  
+According to the selected auth type, either signIn or signUp methods of the Auth Class are called and errors in either processes are recorded which change the state of the page, as can be seen in the following snippet:
+```dart
+if (_authMode == AuthMode.Login) {
+      // Log user in
+      await Provider.of<Auth>(context).signIn(
+          email: _authData['email'].trim(),
+          password: _authData['password'].trim());
+      _loginErrorMessage = Provider.of<Auth>(context).getErrorMessage;
+      if (_loginErrorMessage != null) {
+        setState(() {
+          _loginError = true;
+        });
+      } else {
+        setState(() {
+          _loginError = false;
+        });
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(OverViewScreen.routeName, (_) => false);
+      }
+    } else {
+      // Sign user up
+      await Provider.of<Auth>(context).signUp(
+          email: _authData['email'].trim(),
+          password: _authData['password'].trim(),
+          name: _authData['SellerName'].trim(),
+          address: _authData['address'].trim() +
+              ' House, Room Number: ' +
+              _authData['roomNum'].trim(),
+          mobNum: _authData['mobileNum'].trim());
+      _signUpErrorMessage = Provider.of<Auth>(context).getErrorMessage;
+      if (_signUpErrorMessage != null) {
+        setState(() {
+          _signUpError = true;
+        });
+      } else {
+        setState(() {
+          _signUpError = false;
+        });
+
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => OverViewScreen()),
+          (_) => false,
+        );
+      }
+    }
+```
+AuthData class which stores the infomation about the current user, is defined as follows:
+```dart
+class AuthData {
+  String userId;
+  String errorMessage;
+  String userName;
+  String userAddress;
+  String userMobile;
+
+  AuthData(
+      {this.userId,
+      this.errorMessage,
+      this.userAddress,
+      this.userMobile,
+      this.userName});
+}
+```
+The Auth Class is defined as a mixin of [*ChangeNotifier*](https://api.flutter.dev/flutter/foundation/ChangeNotifier-class.html) class as follows:
+```dart
+class Auth with ChangeNotifier
+```
+A mixin refers to the ability to add the capabilities of another class or classes to your own class, without inheriting from those classes. The methods of those classes can now be called on your class, and the code within those classes will execute. Dart does not have multiple inheritance, but the use of mixins allows you to fold in other classes to achieve code reuse while avoiding the issues that multiple inheritance would cause.  
+The signIn method of Auth class, first signs in the user with given email and password into the FirebaseAuth, then stores the information of that user from firestore, into an object of AuthData.
+```dart
+  Future signIn({String email, String password}) async {
+    try {
+      // auth = new AuthData();
+      FirebaseUser currUser = (await FirebaseAuth.instance
+              .signInWithEmailAndPassword(email: email, password: password)
+              .catchError((e) {
+        print("SIGNIN ERROR: " + e.code);
+        auth.errorMessage = e.code;
+      }))
+          .user;
+      auth.userId = currUser.uid;
+      auth.errorMessage = null;
+      await Firestore.instance
+          .collection("users")
+          .document(currUser.uid)
+          .get()
+          .then((DocumentSnapshot result) {
+            auth.userName = result['name'];
+            auth.userAddress = result['address'];
+            auth.userMobile = result['mobNum'];
+      });
+    } catch (e) {}
+    notifyListeners();
+  }
+```
+
 ## Instructions for VS Code
 ### Run app without breakpoints
 Click Debug > Start Without Debugging in the main IDE window, or press Ctrl+F5. The status bar turns orange to show you are in a debug session
