@@ -82,26 +82,14 @@ AuthCard is a custom widget to display they contents of form field based on the 
 ### Submit Button Functionality
 Now this is the heart of the login/signup page. [*Provider Package*](https://pub.dev/packages/provider) is used to manage state in College OLX. Though there are a number of state-management packages available, I chose provider for it's sheer simplicity and to strengthen my concepts of state management.  
 According to the selected auth type, either signIn or signUp methods of the Auth Class are called and errors in either processes are recorded which change the state of the page, as can be seen in the following snippet:
+   
 ```dart
-if (_authMode == AuthMode.Login) {
-      // Log user in
+// Sign in
       await Provider.of<Auth>(context).signIn(
           email: _authData['email'].trim(),
           password: _authData['password'].trim());
       _loginErrorMessage = Provider.of<Auth>(context).getErrorMessage;
-      if (_loginErrorMessage != null) {
-        setState(() {
-          _loginError = true;
-        });
-      } else {
-        setState(() {
-          _loginError = false;
-        });
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil(OverViewScreen.routeName, (_) => false);
-      }
-    } else {
-      // Sign user up
+// Sign up
       await Provider.of<Auth>(context).signUp(
           email: _authData['email'].trim(),
           password: _authData['password'].trim(),
@@ -111,21 +99,7 @@ if (_authMode == AuthMode.Login) {
               _authData['roomNum'].trim(),
           mobNum: _authData['mobileNum'].trim());
       _signUpErrorMessage = Provider.of<Auth>(context).getErrorMessage;
-      if (_signUpErrorMessage != null) {
-        setState(() {
-          _signUpError = true;
-        });
-      } else {
-        setState(() {
-          _signUpError = false;
-        });
-
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => OverViewScreen()),
-          (_) => false,
-        );
-      }
-    }
+  
 ```
 AuthData class which stores the infomation about the current user, is defined as follows:
 ```dart
