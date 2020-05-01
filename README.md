@@ -193,10 +193,10 @@ Note: Both of the above functions [*notifyListeners*](https://api.flutter.dev/fl
 ## Overview Screen
 This screen is responsible to construct the bottom tab navigator which you see in the below picture.
 <p align= "center">
-<img width="400" height="50" src="Pictures/bottomTab.png"><br>
+<img src="Pictures/bottomTab.png"><br>
 </p>
 Now, it could have been implemented using standard [*BottomNavigationBar*](https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html) process, but we've got a couple of things to handle to make it more UI friendly.  
-Following are the things:    
+Following are the things:  
 * The navigation history should remain intact, even if we switch between different items in bottom navigation bar
 * On back button pressed at any page (except the Home page) in the bottom navigation bar, the user should be returned to the Home page.
 
