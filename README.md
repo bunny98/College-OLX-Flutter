@@ -257,7 +257,7 @@ offstage: _selectedIndex != index
 ```
 We get value of _selectedIndex from BottomNavigationBar.<br>
 So if _selectedIndex is the same as index, then offstage will be false and its child will be painted.<br>
-And if _selectedIndex is not same as index, then offstage will be true and its child will not be painted.<br>
+And if _selectedIndex is not same as index, then offstage will be true and its child will not be painted.<br><br>
 Finally, we return a *WillPopScope* Widget from the OverviewScreen Widget's build method. The *onWillPopScope* property of *WillPopScope* handles the back press events in the way we want them.
 
 ```dart
