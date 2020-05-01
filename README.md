@@ -313,7 +313,9 @@ This as you can see, is a bunch of standard Widgets like *Column*, *Container*, 
 <p align= "center">
 <img width="200" height="400" src="Pictures/4.png"><br>
 </p>
+This screen in built using [*ListView.builder*](https://api.flutter.dev/flutter/widgets/ListView/ListView.builder.html), and *Card* Widgets. It's pretty straightforward and easily implementable. Green bg of sent requests cards, represent the request has been accepted. Similary, yellow and red mean request is pending and declined. The [*upi_india*](https://pub.dev/packages/upi_india) package has been used to integrate UPI payments in the application. Read the documentation for futher instructions. That's pretty simple too!
 
+### Streaming Notifications
 
 ## Instructions for VS Code
 ### Run app without breakpoints
