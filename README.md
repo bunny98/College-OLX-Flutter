@@ -199,8 +199,7 @@ Now, it could have been implemented using standard process mentioned in [link](h
 Following are the things:<be>
 <ul>
   <li> The navigation history should remain intact, even if we switch between different items in bottom navigation bar</li>
-  <li>On back button pressed at any page (except the Home page) in the bottom navigation bar, the user should be returned to the Home    page</li>
-</ul>
+  <li>On back button pressed at any page (except the Home page) in the bottom navigation bar, the user should be returned to the Home    page</li></ul>
 To Start, let's first define the widgets we want the screen to change to, after we tap on one of the bottom navigator button.
 
 ```dart
