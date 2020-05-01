@@ -196,9 +196,11 @@ This screen is responsible to construct the bottom tab navigator which you see i
 <img src="Pictures/bottomTab.png"><br>
 </p>
 Now, it could have been implemented using standard process mentioned in [link](https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html) , but we've got a couple of things to handle to make it more UI friendly.<br>
-Following are the things:<br>
-* The navigation history should remain intact, even if we switch between different items in bottom navigation bar<br>
-* On back button pressed at any page (except the Home page) in the bottom navigation bar, the user should be returned to the Home page.  
+Following are the things:<be>
+<ul>
+  <li> The navigation history should remain intact, even if we switch between different items in bottom navigation bar</li>
+  <li>On back button pressed at any page (except the Home page) in the bottom navigation bar, the user should be returned to the Home    page</li>
+</ul>
 To Start, let's first define the widgets we want the screen to change to, after we tap on one of the bottom navigator button.
 
 ```dart
