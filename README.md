@@ -199,7 +199,59 @@ Now, it could have been implemented using standard process mentioned in [link](h
 Following are the things:<br>
 * The navigation history should remain intact, even if we switch between different items in bottom navigation bar<br>
 * On back button pressed at any page (except the Home page) in the bottom navigation bar, the user should be returned to the Home page.<br>
-
+To Start, let's first define the widgets we want the screen to change to, after we tap on one of the bottom navigator button.
+```dart
+  static final List<Widget> _widgetOptions = [
+    ProductsGrid(),
+    MyProducts(),
+    Notifications(),
+    AddItem(),
+  ];
+```
+Then we create a private function called *_routeBuilders* which maps String to [*WidgetBuilder*](https://api.flutter.dev/flutter/widgets/WidgetBuilder.html) based on index. *WidgetBuilder* is nothing but a signature for a function that creates a widget.
+```dart
+  Map<String, WidgetBuilder> _routeBuilders(BuildContext context, int index) {
+    return {
+      '/': (context) {
+        return [
+          ProductsGrid(),
+          MyProducts(),
+          Notifications(),
+          AddItem(),
+        ].elementAt(index);
+      },
+    };
+  }
+```
+Following this, is another Widget called *_buildOffStageNavigator* which we'll be using inside Stack widget. *OffStage* is a widget that lays the child out as if it was in the tree, but without painting anything, without making the child available for hit testing, and without taking any room in the parent. We use the *offstage* property of *OffStage* to decide whether the child is hidden from the rest of the tree. If true, the child is laid out as if it was in the tree, but without painting anything, without making the child available for hit testing, and without taking any room in the parent. If false, the child is included in the tree as normal.<br>
+You can read more about them from the [link1](https://api.flutter.dev/flutter/widgets/Offstage-class.html) and [link2](https://api.flutter.dev/flutter/widgets/Offstage/offstage.html)
+```dart
+  Widget _buildOffstageNavigator(int index) {
+    print("INDEX INSIDE OFF STAGE" +
+        index.toString() +
+        "SELECTED INDEX" +
+        _selectedIndex.toString());
+    var routeBuilders = _routeBuilders(context, index);
+    return Offstage(
+      offstage: _selectedIndex != index,
+      child: Navigator(
+        key: _navigatorKeys[index],
+        onGenerateRoute: (routeSettings) {
+          return MaterialPageRoute(
+            builder: (context) => routeBuilders[routeSettings.name](context),
+          );
+        },
+      ),
+    );
+  }
+```
+We use the following property to control what to show:
+```dart
+offstage: _selectedIndex != index
+```
+We get value of _selectedIndex from BottomNavigationBar.<br>
+So if _selectedIndex is the same as index, then offstage will be false and its child will be painted.<br>
+And if _selectedIndex is not same as index, then offstage will be true and its child will not be painted<br>
 
 ## Instructions for VS Code
 ### Run app without breakpoints
