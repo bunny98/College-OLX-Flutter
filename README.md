@@ -273,6 +273,48 @@ onWillPop: () {
             }
 ```
 
+## UI of All Products, My Products, Add Product and Notifications Screen
+### All Products Screen
+<p align= "center">
+<img width="200" height="400" src="Pictures/2.png"><br>
+</p>
+Its a built using [*GridView.builder*](https://api.flutter.dev/flutter/widgets/GridView/GridView.builder.html) wrapped inside a [*RefreshIndicator*](https://api.flutter.dev/flutter/material/RefreshIndicator-class.html) to enable pull-down refreshing of the page.<br>Each of the widgets rendered by *GridView.builder* is a [*GridTile*](https://api.flutter.dev/flutter/material/GridTile-class.html) Widget with a footer of a *GridTileBar* used to render the names of the objects. I've put my settings below, feel free to play around though. The *gridDelegate* property of *GridView.builder* is responsible to layout the grid in a specified manner. 
+
+```dart
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 10,
+            childAspectRatio: 2.5 / 2,
+            crossAxisSpacing: 5,
+          ),
+```
+
+### My Products Screen
+<p align= "center">
+<img width="200" height="400" src="Pictures/3.png"><br>
+</p>
+Like previously mentioned, this is a also built using *GridView.builder*. Only difference lies in the *gridDelegate* property of *GridView.builder*:
+
+```dart
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 1,
+              mainAxisSpacing: 10,
+              childAspectRatio: 4.0,
+            ),
+```
+
+### Add Products Screen
+<p align= "center">
+<img width="200" height="400" src="Pictures/5.png"><br>
+</p>
+This as you can see, is a bunch of standard Widgets like *Column*, *Container*, *SingleChildScrollView*, *Form* and a *GestureDetector* to detect a tap on the *Take a picture* container. There's a pretty standard set of instructions used to embed usage of phone camera in a flutter application. You can refer to this [link](https://flutter.dev/docs/cookbook/plugins/picture-using-camera) for further info.
+
+### Notifications Screen
+<p align= "center">
+<img width="200" height="400" src="Pictures/4.png"><br>
+</p>
+
+
 ## Instructions for VS Code
 ### Run app without breakpoints
 Click Debug > Start Without Debugging in the main IDE window, or press Ctrl+F5. The status bar turns orange to show you are in a debug session
