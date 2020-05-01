@@ -315,20 +315,75 @@ This as you can see, is a bunch of standard Widgets like *Column*, *Container*, 
 </p>
 This screen in built using [*ListView.builder*](https://api.flutter.dev/flutter/widgets/ListView/ListView.builder.html), and *Card* Widgets. It's pretty straightforward and easily implementable. Green bg of sent requests cards, represent the request has been accepted. Similary, yellow and red mean request is pending and declined. The [*upi_india*](https://pub.dev/packages/upi_india) package has been used to integrate UPI payments in the application. Read the documentation for futher instructions. That's pretty simple too!
 
-### Streaming Notifications
+## Streaming Notifications
+Welcome to last section of this interminable blog post. Here we talk about the heart of this application, *drum rolls* STREAMING NOTIFICATIONS!<br>
+The notifications tab keeps updating itself when new request is made or a request is responded. Received requests for user's products are stored in a list called *_receivedRequests* in the *Products* class which is a mixin with the *ChangeNotifier* class, mentioned earlier.<br>
+Document snapshots are listened to, continously by the application and whenever an update is detected, that update is stored in the local variable that's displayed in the required widgets. *Firestore* provides methods for receiving snapshots from cloud firestore data storage. After adding the updates, all the listeners in the application are notified. Please see the below snippet for clarification:
 
-## Instructions for VS Code
-### Run app without breakpoints
-Click Debug > Start Without Debugging in the main IDE window, or press Ctrl+F5. The status bar turns orange to show you are in a debug session
-### Run app with breakpoints
-* If desired, set breakpoints in your source code.
-* Click Debug > Start Debugging in the main IDE window, or press F5.
-  * The left Debug Sidebar shows stack frames and variables.
-  * The bottom Debug Console pane shows detailed logging output.
-  * Debugging is based on a default launch configuration. To customize, click the cog at the top of the Debug Sidebar to create a         launch.json file. You can then modify the values.
+```dart
+Future<void> getRequests() async {
+    if (_myItems.isNotEmpty)
+      _myItems.forEach((item) {
+        var snapshots = Firestore.instance
+            .collection("requests")
+            .document(item.id)
+            .collection(item.id)
+            .orderBy('timeStamp', descending: true)
+            .snapshots();
+        receivedReqStream = snapshots.listen((data) {
+          if (data.documents.length > 0 && _shouldListenRReq) {
+            data.documents.forEach((doc) async {
+              if (doc['response'] == 'Pending') {
+                int flg = 0;
+                _receivedRequests.forEach((req) {
+                  if (req.prodId == item.id && req.userId == doc['userId'])
+                    flg = 1;
+                });
+                if (flg == 0) {
+                  _receivedRequests.add(Requests(
+                      prodId: item.id,
+                      userId: doc['userId'],
+                      response: doc['response'],
+                      timeStamp: doc['timeStamp'],
+                      userName: doc['userName']));
+                  print('ADDED REQUEST!');
+                  notifyListeners();
+                }
+              }
+            });
+          }
+        });
+      });
+  }
+```
 
-## Instructions for Android Studio
-* Locate the main Android Studio toolbar
-* In the target selector, select an Android device for running the app. If none are listed as available, select Tools> Android > AVD Manager and create one there. For details, see Managing AVDs.
-* Click the run icon in the toolbar, or invoke the menu item Run > Run.
+Similary sent requests are also streamed in. Following is the code snippet of the function responsible:
 
+```dart
+Future<void> sentRequestStreams(String uid) {
+    _sentRequest.forEach((req) {
+      try {
+        var snaps = Firestore.instance
+            .collection("requests")
+            .document(req.prodId)
+            .collection(req.prodId)
+            .where('userId', isEqualTo: uid)
+            .snapshots();
+        snaps.listen((data) {
+          if (data.documents.length > 0) {
+            data.documents.forEach((doc) {
+              if (req.response != doc['response']) {
+                req.response = doc['response'];
+                notifyListeners();
+              }
+            });
+          }
+        });
+      } catch (e) {
+        print(e);
+      }
+    });
+  }
+```
+
+That's all for this post. Take care!
