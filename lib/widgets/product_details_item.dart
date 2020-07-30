@@ -40,7 +40,7 @@ class _ProductDetailsItemState extends State<ProductDetailsItem> {
     await Firestore.instance.runTransaction((transaction) async {
       await transaction.set(documentReference, {
         'userId': _userId,
-        'userName':_userName,
+        'userName': _userName,
         'response': 'Pending',
         'timeStamp': DateTime.now().millisecondsSinceEpoch.toString(),
       });
@@ -60,29 +60,32 @@ class _ProductDetailsItemState extends State<ProductDetailsItem> {
 
   @override
   Widget build(BuildContext context) {
+    print('*********PRODUCT DETAILS WIDGET BUILT***********');
     _userId = Provider.of<Auth>(context).userId;
     _userName = Provider.of<Auth>(context).userName;
     Provider.of<Products>(context).getMyItems.forEach((item) {
       if (widget.prod.id == item.id) _canSendRequest = false;
     });
     _sentRequests = Provider.of<Products>(context).sentRequest;
-    _sentRequests.forEach((req){
-      if(req.prodId == widget.prod.id)
-        _hasAlreadySentRequest = true;
+    _sentRequests.forEach((req) {
+      if (req.prodId == widget.prod.id) _hasAlreadySentRequest = true;
     });
     return Container(
       padding: EdgeInsets.all(20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                widget.prod.imageUrl,
-                fit: BoxFit.cover,
-                width: 350,
-                height: 250,
-              )),
+          Hero(
+            tag: 'SelectedObj',
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  widget.prod.imageUrl,
+                  fit: BoxFit.cover,
+                  width: 350,
+                  height: 250,
+                )),
+          ),
           SizedBox(
             height: 20,
           ),

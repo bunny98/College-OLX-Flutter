@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
 import './takePictureScreen.dart';
@@ -58,7 +59,7 @@ class EditMyProductScreenState extends State<EditMyProductScreen> {
         .collection("products")
         .document(widget.prod.id)
         .delete();
-    
+
     var docs = await Firestore.instance
         .collection("requests")
         .document(widget.prod.id)
@@ -128,6 +129,7 @@ class EditMyProductScreenState extends State<EditMyProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('*********EDIT MYSCREEN BUILT***********');
     _imageUrl = widget.prod.imageUrl;
     return Scaffold(
         body: SingleChildScrollView(
@@ -215,6 +217,10 @@ class EditMyProductScreenState extends State<EditMyProductScreen> {
                             onSaved: (value) {
                               _formData['price'] = value;
                             },
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              WhitelistingTextInputFormatter.digitsOnly
+                            ],
                             validator: (value) {
                               if (value.length == 0)
                                 return 'Cannot be left empty';

@@ -2,6 +2,7 @@
 import 'dart:convert';
 // import 'package:ent/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../providers/products.dart';
@@ -185,6 +186,7 @@ class _AuthCardState extends State<AuthCard> {
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
+    print('*********AUTH SCREEN BUILT***********');
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -265,6 +267,10 @@ class _AuthCardState extends State<AuthCard> {
                   ),
                 if (_authMode == AuthMode.Signup)
                   TextFormField(
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
                     enabled: _authMode == AuthMode.Signup,
                     decoration: InputDecoration(
                         labelText: 'Room Number',
@@ -275,6 +281,10 @@ class _AuthCardState extends State<AuthCard> {
                   ),
                 if (_authMode == AuthMode.Signup)
                   TextFormField(
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
                     enabled: _authMode == AuthMode.Signup,
                     decoration: InputDecoration(
                         labelText: 'Mobile Number',

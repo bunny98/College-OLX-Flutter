@@ -31,6 +31,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   Widget build(context) {
     final size = MediaQuery.of(context).size;
     final deviceRatio = size.width / size.height;
+    print('*********TAKE PICTURE SCREEN BUILT***********');
     return Scaffold(
       body: FutureBuilder(
         future: _initializeControllerFuture,

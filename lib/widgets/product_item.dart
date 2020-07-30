@@ -9,6 +9,7 @@ class ProductItemWidget extends StatelessWidget {
   ProductItemWidget({this.id, this.imageUrl, this.prodName});
   @override
   Widget build(BuildContext context) {
+    print('*********PRODUCT ITEM WIDGET BUILT***********');
     return ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: GestureDetector(

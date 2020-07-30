@@ -103,6 +103,7 @@ class OverviewScreenState extends State<OverViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('*********OVERVIEW SCREEN BUILT***********');
     return _isInit
         ? Scaffold(
             body: Center(

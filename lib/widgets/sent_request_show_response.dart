@@ -44,6 +44,7 @@ class _SentRequestShowResponseState extends State<SentRequestShowResponse> {
   }
 
   Widget build(BuildContext context) {
+    print('*********SENT REQUEST SHOW RESPONSE WIDGET BUILT***********');
     final deviceSize = MediaQuery.of(context).size;
     // print(prod);
     var _inDocResponse = widget.request.response;

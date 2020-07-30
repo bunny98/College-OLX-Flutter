@@ -10,6 +10,7 @@ class ProductNotification extends StatefulWidget {
 
 class _ProductNotificationState extends State<ProductNotification> {
   Widget build(BuildContext context) {
+    print('*********PRODUCT NOTIFICATIONS LIST WIDGET BUILT***********');
     return StreamBuilder(
         stream: Firestore.instance
             .collection("requests")

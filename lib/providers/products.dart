@@ -210,6 +210,7 @@ class Products with ChangeNotifier {
         .getDocuments()
         .then((querySnapshot) {
       querySnapshot.documents.forEach((doc) {
+        print(doc.data['price']);
         loadedItems.add(Product(
             id: doc.documentID,
             imageUrl: doc.data['imageUrl'],

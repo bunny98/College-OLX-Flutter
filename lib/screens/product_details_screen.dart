@@ -9,6 +9,7 @@ class ProductDetailsScreen extends StatelessWidget {
   ProductDetailsScreen(this.prodId);
   @override
   Widget build(BuildContext context) {
+    print('*********PRODUCT DETAILS SCREEN BUILT***********');
     final product = Provider.of<Products>(
       context,
       listen: false,

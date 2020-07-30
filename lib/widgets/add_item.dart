@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:ent_new/models/product.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../screens/takePictureScreen.dart';
 import '../providers/auth.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +31,7 @@ class AddItemState extends State<AddItem> {
     'Yay! You\'ve put something up at College OLX',
     textAlign: TextAlign.center,
   ));
-    final snackBarUploading = SnackBar(
+  final snackBarUploading = SnackBar(
       content: Text(
     'Hold On, It\'ll take a sec...',
     textAlign: TextAlign.center,
@@ -47,6 +48,7 @@ class AddItemState extends State<AddItem> {
     availableCameras().then((cam) {
       camera = cam.first;
     });
+    _hasTakenImage = false;
     super.initState();
   }
 
@@ -100,6 +102,7 @@ class AddItemState extends State<AddItem> {
 
   @override
   Widget build(BuildContext context) {
+    print('*********ADD ITEM WIDGET BUILT***********');
     _userId = Provider.of<Auth>(context).userId;
     return Container(
         child: SingleChildScrollView(
@@ -111,14 +114,15 @@ class AddItemState extends State<AddItem> {
                   height: 250,
                   child: GestureDetector(
                       onTap: () async {
-                        _hasTakenImage = false;
                         _imagePath = await Navigator.of(context).push(
                             MaterialPageRoute(
                                 builder: (ctx) =>
                                     TakePictureScreen(camera: camera)));
                         if (_imagePath != null) {
                           print("IMAGE PATH: " + _imagePath);
-                          _hasTakenImage = true;
+                          setState(() {
+                            _hasTakenImage = true;
+                          });
                         }
                       },
                       child: Container(
@@ -126,7 +130,7 @@ class AddItemState extends State<AddItem> {
                           child: _hasTakenImage
                               ? Image.file(
                                   File(_imagePath),
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.contain,
                                   height: 245,
                                   width: 320,
                                 )
@@ -177,6 +181,10 @@ class AddItemState extends State<AddItem> {
                             onSaved: (value) {
                               _formData['price'] = value;
                             },
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              WhitelistingTextInputFormatter.digitsOnly
+                            ],
                             validator: (value) {
                               if (value.length == 0)
                                 return 'Cannot be left empty';

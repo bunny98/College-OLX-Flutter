@@ -22,6 +22,7 @@ class _ProductsGridState extends State<ProductsGrid> {
 
   @override
   Widget build(BuildContext context) {
+    print('*********PRODUCTS GRID WIDGET BUILT***********');
     final loadedProducts = Provider.of<Products>(context).items;
     return RefreshIndicator(
         key: _refreshIndicatorKey,
@@ -35,10 +36,13 @@ class _ProductsGridState extends State<ProductsGrid> {
             crossAxisSpacing: 5,
           ),
           itemCount: loadedProducts.length,
-          itemBuilder: (ctx, i) => ProductItemWidget(
-            id: loadedProducts[i].id,
-            prodName: loadedProducts[i].prodName,
-            imageUrl: loadedProducts[i].imageUrl,
+          itemBuilder: (ctx, i) => Hero(
+            tag: 'SelectedObj',
+            child: ProductItemWidget(
+              id: loadedProducts[i].id,
+              prodName: loadedProducts[i].prodName,
+              imageUrl: loadedProducts[i].imageUrl,
+            ),
           ),
         ));
   }

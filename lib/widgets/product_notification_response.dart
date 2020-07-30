@@ -127,6 +127,7 @@ class _ProductNotificationResponseState
   }
 
   Widget build(BuildContext context) {
+    print('*********PRODUCT NOTIFICATIONS RESPONSE WIDGET BUILT***********');
     final deviceSize = MediaQuery.of(context).size;
 
     // return Text(widget.document['response']);

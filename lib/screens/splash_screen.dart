@@ -45,6 +45,7 @@ class SplashScreenState extends State<SplashScreen> {
   }
 
   Widget build(BuildContext context) {
+    print('*********SPLASH SCREEN BUILT***********');
     return Scaffold(
       body: Center(child: CircularProgressIndicator()),
     );

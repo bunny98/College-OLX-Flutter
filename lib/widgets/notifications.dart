@@ -26,6 +26,7 @@ class _NotificationsState extends State<Notifications> {
   @override
   Widget build(BuildContext context) {
     // Provider.of<Products>(context).shouldListenRReq();
+    print('*********NOTIFICATIONS WIDGET BUILT***********');
     List<Requests> _sentRequests = Provider.of<Products>(context).sentRequest;
     List<Requests> _receivedRequests =
         Provider.of<Products>(context).receivedRequests;

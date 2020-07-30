@@ -9,6 +9,7 @@ import '../screens/edit_my_product_screen.dart';
 class MyProducts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    print('*********MY PRODUCTS WIDGET BUILT***********');
     List<Product> loadedProducts =
         Provider.of<Products>(context).getMyItems;
     return loadedProducts.length == 0
