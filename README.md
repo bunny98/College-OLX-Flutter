@@ -4,7 +4,7 @@ So fasten your seat belts and get ready for fluttering through *College OLX*
 
 # College OLX - A Flutter Application
 
-A local rentals app with streaming notifications and UPI payments integrated, specially designed for International Institute of Information Technology, Naya Raipur.  
+A local rentals app with streaming notifications and UPI payments integrated, specially designed for International Institute of Information Technology, Naya Raipur. Backend microserivces have been written in java using Spring Boot and can be found [here](https://github.com/bunny98/Rentals-Spring-Boot-Microservices).
 State management is done using [Provider Package](https://pub.dev/packages/provider)  
 Data is stored and retrived from [Google Firebase](https://firebase.google.com/)
 
