@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
-import 'package:college_olx_flutter/models/product.dart';
+import '../models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../screens/takePictureScreen.dart';

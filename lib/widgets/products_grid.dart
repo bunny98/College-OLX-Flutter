@@ -1,4 +1,4 @@
-import 'package:college_olx_flutter/providers/auth.dart';
+import '../providers/auth.dart';
 import 'package:flutter/material.dart';
 import './product_item.dart';
 import 'package:provider/provider.dart';

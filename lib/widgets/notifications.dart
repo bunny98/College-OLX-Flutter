@@ -1,7 +1,7 @@
-import 'package:college_olx_flutter/models/requests.dart';
-import 'package:college_olx_flutter/widgets/product_notification_response.dart';
-import 'package:college_olx_flutter/widgets/sent_request.dart';
-import 'package:college_olx_flutter/widgets/sent_request_show_response.dart';
+import '../models/requests.dart';
+import '../widgets/product_notification_response.dart';
+import '../widgets/sent_request.dart';
+import '../widgets/sent_request_show_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import '../providers/products.dart';

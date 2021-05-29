@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:college_olx_flutter/models/requests.dart';
-import 'package:college_olx_flutter/providers/products.dart';
+import '../models/requests.dart';
+import '../providers/products.dart';
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../providers/auth.dart';

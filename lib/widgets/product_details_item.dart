@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:college_olx_flutter/models/requests.dart';
+import '../models/requests.dart';
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import 'package:provider/provider.dart';

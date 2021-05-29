@@ -1,4 +1,4 @@
-import 'package:college_olx_flutter/providers/received_request.dart';
+import '../providers/received_request.dart';
 import 'package:flutter/material.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/my_products.dart';
