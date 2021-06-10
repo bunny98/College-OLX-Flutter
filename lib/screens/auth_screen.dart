@@ -1,15 +1,9 @@
-// import 'dart:math';
-import 'dart:convert';
-// import 'package:ent/main.dart';
+import 'package:ent_new/models/college.dart';
+import 'package:ent_new/view_models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth.dart';
-import '../providers/products.dart';
 import '../screens/overview_screen.dart';
-// import 'package:camera/camera.dart';
-
-enum AuthMode { Signup, Login }
 
 class AuthScreen extends StatelessWidget {
   static const routeName = '/auth';
@@ -95,107 +89,88 @@ class AuthCard extends StatefulWidget {
 }
 
 class _AuthCardState extends State<AuthCard> {
+  static const String ADD_COLLEGE_ITEM_ID = "ADD";
+  static const String NAME_KEY = "name";
+  static const String MOB_NUM_KEY = "mobile";
+
   final GlobalKey<FormState> _formKey = GlobalKey();
-  AuthMode _authMode = AuthMode.Login;
+  final UserViewModel _userViewModel = UserViewModel.getInstance();
 
   var _isLoading = false;
-  var _loginError = false;
-  var _loginErrorMessage = '';
-  var _signUpError = false;
-  var _signUpErrorMessage = '';
-  final _passwordController = TextEditingController();
+  College _chosenCollege;
 
-  Map<String, String> _authData = {
-    'SellerName': '',
-    'email': '',
-    'password': '',
-    'address': '',
-    'roomNum': '',
-    'mobileNum': '',
-  };
+  Map<String, String> _authData = {NAME_KEY: "", MOB_NUM_KEY: ""};
 
   void _submit() async {
     if (!_formKey.currentState.validate()) {
       // Invalid!
       return;
     }
+    if (_chosenCollege == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Please select a college"),
+      ));
+      return;
+    }
     _formKey.currentState.save();
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      // Log user in
-      await Provider.of<Auth>(context).signIn(
-          email: _authData['email'].trim(),
-          password: _authData['password'].trim());
-      _loginErrorMessage = Provider.of<Auth>(context).getErrorMessage;
-      if (_loginErrorMessage != null) {
-        setState(() {
-          _loginError = true;
-        });
-      } else {
-        setState(() {
-          _loginError = false;
-        });
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil(OverViewScreen.routeName, (_) => false);
-      }
-    } else {
-      // Sign user up
-      await Provider.of<Auth>(context).signUp(
-          email: _authData['email'].trim(),
-          password: _authData['password'].trim(),
-          name: _authData['SellerName'].trim(),
-          address: _authData['address'].trim() +
-              ' House, Room Number: ' +
-              _authData['roomNum'].trim(),
-          mobNum: _authData['mobileNum'].trim());
-      _signUpErrorMessage = Provider.of<Auth>(context).getErrorMessage;
-      if (_signUpErrorMessage != null) {
-        setState(() {
-          _signUpError = true;
-        });
-      } else {
-        setState(() {
-          _signUpError = false;
-        });
 
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => OverViewScreen()),
-          (_) => false,
-        );
-      }
-    }
+    bool retVal = await _userViewModel.signUp(
+        name: _authData[NAME_KEY],
+        collegeId: _chosenCollege.id,
+        mobNum: _authData[MOB_NUM_KEY]);
+
+    _userViewModel.setCurrCollege = _chosenCollege;
+
     setState(() {
       _isLoading = false;
     });
+    if (retVal)
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => OverViewScreen()),
+        (_) => false,
+      );
   }
 
-  void _switchAuthMode() {
-    if (_authMode == AuthMode.Login) {
-      setState(() {
-        _authMode = AuthMode.Signup;
-      });
-    } else {
-      setState(() {
-        _authMode = AuthMode.Login;
-      });
-    }
+  Widget getDropdownCollegeWidget(List<College> colleges) {
+    List<DropdownMenuItem<College>> items = colleges
+        .map((e) => DropdownMenuItem<College>(
+              child: Text(e.name),
+              value: e,
+            ))
+        .toList();
+    items.add(DropdownMenuItem(
+      child: Text("Add..."),
+      value: College(id: ADD_COLLEGE_ITEM_ID, name: "Add...", numOfStudents: 0),
+    ));
+    return DropdownButton(
+      isExpanded: true,
+      value: _chosenCollege,
+      items: items,
+      hint: Text("Choose Your College"),
+      onChanged: (college) async {
+        if (college.id == ADD_COLLEGE_ITEM_ID) {
+          await showAddCollegeDialog(context: context);
+        } else {
+          setState(() {
+            _chosenCollege = college;
+          });
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    print('*********AUTH SCREEN BUILT***********');
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
       child: Container(
-        constraints: BoxConstraints(
-            minHeight: _authMode == AuthMode.Signup ? 550 : 260,
-            maxHeight: _authMode == AuthMode.Signup ? 650 : 300),
         width: deviceSize.width * 0.85,
         padding: EdgeInsets.all(16.0),
         child: Form(
@@ -203,137 +178,107 @@ class _AuthCardState extends State<AuthCard> {
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.Signup,
-                    decoration: InputDecoration(
-                        labelText: 'Name', labelStyle: TextStyle(fontSize: 15)),
-                    onSaved: (value) {
-                      _authData['SellerName'] = value;
-                    },
-                  ),
                 TextFormField(
                   decoration: InputDecoration(
-                      labelText: 'E-Mail', labelStyle: TextStyle(fontSize: 15)),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value.isEmpty || !value.contains('@')) {
-                      return 'Invalid email!';
-                    }
+                      labelText: 'Name', labelStyle: TextStyle(fontSize: 15)),
+                  validator: (val) {
+                    if (val.trim().isEmpty) return "Cannot be empty";
                   },
                   onSaved: (value) {
-                    _authData['email'] = value;
+                    _authData[NAME_KEY] = value.trim();
                   },
                 ),
                 TextFormField(
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
                   decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: 'Mobile Number',
                       labelStyle: TextStyle(fontSize: 15)),
-                  obscureText: true,
-                  controller: _passwordController,
-                  validator: (value) {
-                    if (value.isEmpty || value.length < 5) {
-                      return 'Password is too short!';
-                    }
+                  validator: (val) {
+                    if (val.trim().length != 10) return "Invalid Number";
                   },
                   onSaved: (value) {
-                    _authData['password'] = value;
+                    _authData[MOB_NUM_KEY] = value.trim();
                   },
                 ),
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.Signup,
-                    decoration: InputDecoration(
-                        labelText: 'Confirm Password',
-                        labelStyle: TextStyle(fontSize: 15)),
-                    obscureText: true,
-                    validator: _authMode == AuthMode.Signup
-                        ? (value) {
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
-                            }
-                          }
-                        : null,
-                  ),
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.Signup,
-                    decoration: InputDecoration(
-                        labelText: 'Hostel',
-                        labelStyle: TextStyle(fontSize: 15)),
-                    onSaved: (value) {
-                      _authData['address'] = value;
-                    },
-                  ),
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      WhitelistingTextInputFormatter.digitsOnly
-                    ],
-                    enabled: _authMode == AuthMode.Signup,
-                    decoration: InputDecoration(
-                        labelText: 'Room Number',
-                        labelStyle: TextStyle(fontSize: 15)),
-                    onSaved: (value) {
-                      _authData['roomNum'] = value;
-                    },
-                  ),
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      WhitelistingTextInputFormatter.digitsOnly
-                    ],
-                    enabled: _authMode == AuthMode.Signup,
-                    decoration: InputDecoration(
-                        labelText: 'Mobile Number',
-                        labelStyle: TextStyle(fontSize: 15)),
-                    onSaved: (value) {
-                      _authData['mobileNum'] = value;
-                    },
-                  ),
-                SizedBox(
-                  height: 20,
-                ),
-                if ((_authMode == AuthMode.Login) && _loginError)
-                  Text(
-                    _loginErrorMessage,
-                    style: TextStyle(color: Colors.red),
-                  ),
-                if ((_authMode == AuthMode.Signup) && _signUpError)
-                  Text(
-                    _signUpErrorMessage,
-                    style: TextStyle(color: Colors.red),
-                  ),
+                Consumer<UserViewModel>(
+                    builder: (context, model, _) => Container(
+                        width: double.infinity,
+                        child: getDropdownCollegeWidget(model.getColleges()))),
                 if (_isLoading)
                   CircularProgressIndicator()
                 else
-                  RaisedButton(
-                    child:
-                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
+                  ElevatedButton.icon(
+                    icon: Icon(Icons.arrow_right_alt),
+                    label: Text("GO!"),
                     onPressed: _submit,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                    color: Theme.of(context).primaryColor,
-                    textColor: Theme.of(context).primaryTextTheme.button.color,
                   ),
-                FlatButton(
-                  child: Text(
-                      '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
-                  onPressed: _switchAuthMode,
-                  padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  textColor: Theme.of(context).primaryColor,
-                ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> showAddCollegeDialog({BuildContext context}) async {
+    String _collegeName = "";
+    final GlobalKey<FormState> _addCollegeformKey = GlobalKey();
+    bool _isAdding = false;
+    Future<void> Function() _onSubmitCollege = () async {
+      if (_addCollegeformKey.currentState.validate()) {
+        bool retVal = await _userViewModel.createCollege(name: _collegeName);
+        if (retVal) {
+          retVal = await _userViewModel.fetchAllColleges();
+        }
+        if (retVal) Navigator.pop(context);
+      }
+    };
+    await showDialog(
+        context: context,
+        builder: (context) => StatefulBuilder(
+              builder: (context, dialogSetState) => AlertDialog(
+                title: Text("Add College"),
+                content: Form(
+                  key: _addCollegeformKey,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                        labelText: 'College Name',
+                        labelStyle: TextStyle(fontSize: 15)),
+                    validator: (val) {
+                      if (val.trim().isEmpty) return "Cannot be empty";
+                    },
+                    onChanged: (val) {
+                      _collegeName = val.trim();
+                    },
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    child: Text("CANCEL"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  if (_isAdding)
+                    CircularProgressIndicator()
+                  else
+                    TextButton(
+                      child: Text("ADD"),
+                      onPressed: () async {
+                        dialogSetState(() {
+                          _isAdding = true;
+                        });
+                        await _onSubmitCollege();
+                        dialogSetState(() {
+                          _isAdding = false;
+                        });
+                      },
+                    )
+                ],
+              ),
+            ));
   }
 }

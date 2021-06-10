@@ -1,15 +1,11 @@
 import 'dart:io';
-
+import 'package:ent_new/constants.dart';
+import 'package:ent_new/view_models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import '../models/product.dart';
 import './takePictureScreen.dart';
 import 'package:camera/camera.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart' as Path;
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../providers/products.dart';
 
 class EditMyProductScreen extends StatefulWidget {
   final Product prod;
@@ -23,8 +19,9 @@ class EditMyProductScreenState extends State<EditMyProductScreen> {
   bool _isDeleting = false;
   bool _hasTakenImage = false;
   bool _isUploading = false;
-  var _imagePath;
-  var _imageUrl;
+  String _imagePath;
+  Product _currProduct;
+  ProductViewModel _productViewModel;
   CameraDescription camera;
   final GlobalKey<FormState> _formKey = GlobalKey();
   final snackBar = SnackBar(
@@ -38,52 +35,33 @@ class EditMyProductScreenState extends State<EditMyProductScreen> {
     textAlign: TextAlign.center,
   ));
 
-  Map<String, dynamic> _formData = {
-    'objName': '',
-    'price': 0.00,
-  };
+  Map<String, dynamic> _formData;
 
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
     availableCameras().then((cam) {
-      camera = cam.first;
+      if (cam.isNotEmpty) camera = cam.first;
     });
+    _currProduct = widget.prod;
+    _productViewModel = ProductViewModel.getInstance();
+    _formData = {
+      'name': _currProduct.name,
+      'price': _currProduct.price,
+    };
     super.initState();
   }
 
-  void _onDelete() async {
-    setState(() {
-      _isDeleting = true;
-    });
-    await Firestore.instance
-        .collection("products")
-        .document(widget.prod.id)
-        .delete();
+  // void _onDelete() async {
+  //   setState(() {
+  //     _isDeleting = true;
+  //   });
 
-    var docs = await Firestore.instance
-        .collection("requests")
-        .document(widget.prod.id)
-        .collection(widget.prod.id)
-        .getDocuments();
-    for (int i = 0; i < docs.documents.length; i++) {
-      var doc = docs.documents[i];
-      await Firestore.instance
-          .collection("requests")
-          .document(widget.prod.id)
-          .collection(widget.prod.id)
-          .document(doc.documentID)
-          .updateData({
-        'response': 'Deleted',
-      });
-    }
-    Provider.of<Products>(context).onAcceptRemoveSameReq(widget.prod.id);
-    Provider.of<Products>(context).deleteItemLocally(widget.prod);
-    setState(() {
-      _isDeleting = false;
-    });
-    Scaffold.of(context).showSnackBar(snackBar2);
-    Navigator.of(context).pop();
-  }
+  //   setState(() {
+  //     _isDeleting = false;
+  //   });
+  //   ScaffoldMessenger.of(context).showSnackBar(snackBar2);
+  //   Navigator.of(context).pop();
+  // }
 
   void _submit() async {
     if (!_formKey.currentState.validate()) return;
@@ -91,47 +69,34 @@ class EditMyProductScreenState extends State<EditMyProductScreen> {
     setState(() {
       _isUploading = true;
     });
+    List<String> _newContentURLs = _currProduct.contentURLs;
+
     if (_hasTakenImage) {
-      StorageReference storageReference = FirebaseStorage.instance
-          .ref()
-          .child('productImage/${Path.basename(_imagePath)}}');
-      StorageUploadTask uploadTask = storageReference.putFile(File(_imagePath));
-      await uploadTask.onComplete;
-      print('NEW File Uploaded!!');
-      await storageReference.getDownloadURL().then((url) {
-        _imageUrl = url;
-        print("NEW IMAGE URL: " + _imageUrl);
-      });
+      // Upload Picture and update _newContentURLs
+
     }
-    await Firestore.instance
-        .collection("products")
-        .document(widget.prod.id)
-        .updateData({
-      'imageUrl': _imageUrl,
-      'prodName': _formData['objName'],
-      'price': _formData['price'],
-    }).then((_) {
-      print('EVERYTHING UPDATED!');
-    });
-    Provider.of<Products>(context).updateLocally(Product(
-        id: widget.prod.id,
-        imageUrl: _imageUrl,
-        price: double.parse(_formData['price']),
-        prodName: _formData['objName'],
-        sellerUserId: widget.prod.sellerUserId));
+
+    //Update Product
+    Product newProd = await _productViewModel.updateProduct(
+        name: _formData['name'],
+        price: _formData['price'],
+        productId: _currProduct.id,
+        contentURLs: _newContentURLs);
+
     setState(() {
       _isUploading = false;
       _hasTakenImage = false;
-      // _imagePath = null;
+      _currProduct = newProd;
+      _imagePath = null;
     });
-    Scaffold.of(context).showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
   Widget build(BuildContext context) {
     print('*********EDIT MYSCREEN BUILT***********');
-    _imageUrl = widget.prod.imageUrl;
     return Scaffold(
+        backgroundColor: MY_PRODUCTS_BG_COLOR,
         body: SingleChildScrollView(
             padding: EdgeInsets.all(10),
             child: Column(
@@ -166,7 +131,7 @@ class EditMyProductScreenState extends State<EditMyProductScreen> {
                                   width: 320,
                                 )
                               : Image.network(
-                                  widget.prod.imageUrl,
+                                  _currProduct.contentURLs[0],
                                   fit: BoxFit.cover,
                                   height: 254,
                                   width: 320,
@@ -196,33 +161,33 @@ class EditMyProductScreenState extends State<EditMyProductScreen> {
                       children: <Widget>[
                         TextFormField(
                           controller: TextEditingController()
-                            ..text = widget.prod.prodName,
+                            ..text = _currProduct.name,
                           decoration: InputDecoration(
-                              labelText: 'Object Name',
+                              labelText: 'Product Name',
                               labelStyle: TextStyle(fontSize: 15)),
                           onSaved: (value) {
-                            _formData['objName'] = value;
+                            _formData['name'] = value;
                           },
                           validator: (value) {
-                            if (value.length == 0)
+                            if (value.trim().length == 0)
                               return 'Cannot be left empty';
                           },
                         ),
                         TextFormField(
                             controller: TextEditingController()
-                              ..text = widget.prod.price.toString(),
+                              ..text = _currProduct.price.toString(),
                             decoration: InputDecoration(
                                 labelText: 'Price',
                                 labelStyle: TextStyle(fontSize: 15)),
                             onSaved: (value) {
-                              _formData['price'] = value;
+                              _formData['price'] = int.parse(value);
                             },
                             keyboardType: TextInputType.number,
                             inputFormatters: <TextInputFormatter>[
-                              WhitelistingTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.digitsOnly
                             ],
                             validator: (value) {
-                              if (value.length == 0)
+                              if (value.trim().length == 0)
                                 return 'Cannot be left empty';
                             }),
                         SizedBox(
@@ -231,29 +196,17 @@ class EditMyProductScreenState extends State<EditMyProductScreen> {
                         if (_isUploading)
                           CircularProgressIndicator()
                         else
-                          RaisedButton(
+                          ElevatedButton(
                             child: Text('Submit'),
                             onPressed: _submit,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            color: Theme.of(context).primaryColor,
-                            textColor:
-                                Theme.of(context).primaryTextTheme.button.color,
                           ),
-                        if (_isDeleting)
-                          CircularProgressIndicator()
-                        else
-                          RaisedButton(
-                            child: Text('Delete'),
-                            onPressed: _onDelete,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            color: Theme.of(context).accentColor,
-                            textColor:
-                                Theme.of(context).primaryTextTheme.button.color,
-                          ),
+                        // if (_isDeleting)
+                        //   CircularProgressIndicator()
+                        // else
+                        //   ElevatedButton(
+                        //     child: Text('Delete'),
+                        //     onPressed: _onDelete,
+                        //   ),
                       ],
                     )),
               ],

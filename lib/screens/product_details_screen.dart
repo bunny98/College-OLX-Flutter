@@ -1,20 +1,17 @@
+import 'package:ent_new/constants.dart';
+import 'package:ent_new/view_models/product_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/products.dart';
 import '../widgets/product_details_item.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
-  final prodId;
+  final String prodId;
   ProductDetailsScreen(this.prodId);
   @override
   Widget build(BuildContext context) {
-    print('*********PRODUCT DETAILS SCREEN BUILT***********');
-    final product = Provider.of<Products>(
-      context,
-      listen: false,
-    ).findById(prodId);
     return Scaffold(
+      backgroundColor: HOME_BG_COLOR,
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         IconButton(
           icon: Icon(Icons.arrow_back),
@@ -22,7 +19,9 @@ class ProductDetailsScreen extends StatelessWidget {
             Navigator.of(context).pop();
           },
         ),
-        ProductDetailsItem(prod: product),
+        Consumer<ProductViewModel>(
+            builder: (context, model, _) =>
+                ProductDetailsItem(prod: model.getProductWithId(prodId))),
         SizedBox(
           height: 10,
         ),

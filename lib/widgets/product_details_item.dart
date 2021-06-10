@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/requests.dart';
+import 'package:ent_new/models/user.dart';
+import 'package:ent_new/view_models/order_model.dart';
+import 'package:ent_new/view_models/user_model.dart';
 import 'package:flutter/material.dart';
 import '../models/product.dart';
-import 'package:provider/provider.dart';
-import '../providers/auth.dart';
-import '../providers/products.dart';
 
 class ProductDetailsItem extends StatefulWidget {
   final Product prod;
@@ -16,60 +14,48 @@ class _ProductDetailsItemState extends State<ProductDetailsItem> {
   bool _isSendingRequest = false;
   bool _canSendRequest = true;
   bool _hasAlreadySentRequest = false;
-
-  List<Product> _myItems;
-  List<Requests> _sentRequests;
-  var _userId;
-  var _userName;
+  User _currUser;
+  OrderViewModel _orderViewModel;
   final snackbar = SnackBar(
       content: Text(
     'Yay! You\'ve sent the request',
     textAlign: TextAlign.center,
   ));
 
+  @override
+  void initState() {
+    super.initState();
+    _currUser = UserViewModel.getInstance().getCurrUser();
+    _canSendRequest = widget.prod.status == "ACTIVE";
+    _hasAlreadySentRequest = widget.prod.status == "PENDING";
+    _orderViewModel = OrderViewModel.getInstance();
+  }
+
   void _onSendRequest() async {
     setState(() {
       _isSendingRequest = true;
     });
 
-    var documentReference = Firestore.instance
-        .collection("requests")
-        .document(widget.prod.id)
-        .collection(widget.prod.id)
-        .document(DateTime.now().millisecondsSinceEpoch.toString());
-    await Firestore.instance.runTransaction((transaction) async {
-      await transaction.set(documentReference, {
-        'userId': _userId,
-        'userName': _userName,
-        'response': 'Pending',
-        'timeStamp': DateTime.now().millisecondsSinceEpoch.toString(),
+    //CREATE ORDER
+    bool retVal = await _orderViewModel.createOrder(
+        productId: widget.prod.id,
+        renterId: _currUser.id,
+        sellerId: widget.prod.sellerId);
+
+    if (retVal) {
+      setState(() {
+        _hasAlreadySentRequest = true;
+        _isSendingRequest = false;
       });
-    });
-    print("REQUEST SENT!");
-    await Provider.of<Products>(context)
-        .saveRequest(pid: widget.prod.id, uid: _userId)
-        .then((_) {
-      print("SAVED REQUEST!");
-      Scaffold.of(context).showSnackBar(snackbar);
-      // Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    } else
       setState(() {
         _isSendingRequest = false;
       });
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    print('*********PRODUCT DETAILS WIDGET BUILT***********');
-    _userId = Provider.of<Auth>(context).userId;
-    _userName = Provider.of<Auth>(context).userName;
-    Provider.of<Products>(context).getMyItems.forEach((item) {
-      if (widget.prod.id == item.id) _canSendRequest = false;
-    });
-    _sentRequests = Provider.of<Products>(context).sentRequest;
-    _sentRequests.forEach((req) {
-      if (req.prodId == widget.prod.id) _hasAlreadySentRequest = true;
-    });
     return Container(
       padding: EdgeInsets.all(20),
       child: Column(
@@ -77,14 +63,15 @@ class _ProductDetailsItemState extends State<ProductDetailsItem> {
         children: <Widget>[
           Hero(
             tag: 'SelectedObj',
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  widget.prod.imageUrl,
-                  fit: BoxFit.cover,
-                  width: 350,
-                  height: 250,
-                )),
+            child: Container(
+              height: 400,
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: NetworkImage(widget.prod.contentURLs[0]))),
+            ),
           ),
           SizedBox(
             height: 20,
@@ -101,19 +88,16 @@ class _ProductDetailsItemState extends State<ProductDetailsItem> {
             if (_isSendingRequest)
               CircularProgressIndicator()
             else if (!_hasAlreadySentRequest)
-              RaisedButton(
-                elevation: 20,
+              ElevatedButton(
                 onPressed: _onSendRequest,
                 child: Text(
                   'Send Request to Seller',
                   style: TextStyle(color: Colors.white),
                 ),
-                color: Colors.purple,
               )
             else
-              RaisedButton(
+              ElevatedButton(
                   onPressed: null,
-                  elevation: 20,
                   child: Text(
                     'Already Requested',
                     style: TextStyle(color: Colors.white),

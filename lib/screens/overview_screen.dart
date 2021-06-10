@@ -1,14 +1,16 @@
-import '../providers/received_request.dart';
+import 'package:ent_new/constants.dart';
+import 'package:ent_new/models/user.dart';
+import 'package:ent_new/view_models/order_model.dart';
+import 'package:ent_new/view_models/product_model.dart';
+import 'package:ent_new/view_models/user_model.dart';
 import 'package:flutter/material.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/my_products.dart';
 import '../widgets/notifications.dart';
 import '../widgets/add_item.dart';
-import '../providers/auth.dart';
 import 'package:provider/provider.dart';
 import '../screens/auth_screen.dart';
-import './splash_screen.dart';
-import '../providers/products.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class OverViewScreen extends StatefulWidget {
   static const routeName = '/overview-screen';
@@ -19,15 +21,10 @@ class OverViewScreen extends StatefulWidget {
 
 class OverviewScreenState extends State<OverViewScreen> {
   int _selectedIndex = 0;
-  bool _isInit = true;
-  var _logoutError;
-  var _userDetails;
-  static final List<Widget> _widgetOptions = [
-    ProductsGrid(),
-    MyProducts(),
-    Notifications(),
-    AddItem(),
-  ];
+  UserViewModel _userViewModel;
+  ProductViewModel _productViewModel;
+  OrderViewModel _orderViewModel;
+  User _currUser;
 
   List<GlobalKey<NavigatorState>> _navigatorKeys = [
     GlobalKey<NavigatorState>(),
@@ -50,10 +47,6 @@ class OverviewScreenState extends State<OverViewScreen> {
   }
 
   Widget _buildOffstageNavigator(int index) {
-    print("INDEX INSIDE OFF STAGE" +
-        index.toString() +
-        "SELECTED INDEX" +
-        _selectedIndex.toString());
     var routeBuilders = _routeBuilders(context, index);
     return Offstage(
       offstage: _selectedIndex != index,
@@ -69,121 +62,130 @@ class OverviewScreenState extends State<OverViewScreen> {
   }
 
   @override
-  void initState(){
-    _isInit = true;
+  void initState() {
     super.initState();
+    _userViewModel = UserViewModel.getInstance();
+    _currUser = _userViewModel.getCurrUser();
+    _productViewModel = ProductViewModel.getInstance();
+    _orderViewModel = OrderViewModel.getInstance();
+    _fetchLobbyProducts();
+    _fetchMyProducts();
+    _initNotificationListener();
   }
 
-  @override
-  Future<void> didChangeDependencies() async {
-    super.didChangeDependencies();
-    if (_isInit) {
-      var _userId = Provider.of<Auth>(context).userId;
-      _userDetails = Provider.of<Auth>(context).userDetails;
-      await Provider.of<Products>(context).fetchObjects(_userId);
-      await Provider.of<Products>(context).getRequests();
-      await Provider.of<Products>(context).setSentRequest(_userId);
-      _isInit = false;
+  void _initNotificationListener() {
+    _orderViewModel.initNotificationListener(userId: _currUser.id);
+  }
+
+  Future _fetchLobbyProducts() async {
+    await _productViewModel.fetchLobbyProducts(
+        collegeId: _currUser.collegeId, userId: _currUser.id);
+  }
+
+  Future _fetchMyProducts() async {
+    await _productViewModel.fetchMyProducts(sellerId: _currUser.id);
+  }
+
+  Color getBgColor() {
+    switch (_selectedIndex) {
+      case 0:
+        return HOME_BG_COLOR;
+      case 1:
+        return MY_PRODUCTS_BG_COLOR;
+      case 2:
+        return NOTIFICATIONS_BG_COLOR;
+      case 3:
+        return ADD_PRODUCT_BG_COLOR;
     }
-  }
-
-  // Future<void> _initialize() async {
-  //   var _userId = Provider.of<Auth>(context).userId;
-  //   _userDetails = Provider.of<Auth>(context).userDetails;
-  //   await Provider.of<Products>(context).fetchObjects(_userId);
-  //   await Provider.of<Products>(context).getRequests();
-  //   await Provider.of<Products>(context).setSentRequest(_userId);
-  // }
-
-  Future<bool> _onWillPop() {
-    setState(() {
-      _selectedIndex = 0;
-    });
+    return Colors.black;
   }
 
   @override
   Widget build(BuildContext context) {
     print('*********OVERVIEW SCREEN BUILT***********');
-    return _isInit
-        ? Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : WillPopScope(
-            onWillPop: () {
-              print("SELECTED INDEX" + _selectedIndex.toString());
-              if (_selectedIndex != 0) {
-                setState(() {
-                  _selectedIndex = 0;
-                });
-                return new Future(() => false);
-              }
-              return new Future(() => true);
-            },
-            child: Scaffold(
-              appBar: PreferredSize(
-                  preferredSize: Size.fromHeight(38),
-                  child: AppBar(
-                    title: _userDetails['userName'] != null
-                        ? Text(
-                            'Hi ' + _userDetails['userName'] + '!',
-                            style: TextStyle(
-                                fontSize: 18, fontStyle: FontStyle.italic),
-                          )
-                        : Text('College Olx'),
-                    actions: <Widget>[
-                      IconButton(
-                        icon: Icon(
-                          Icons.exit_to_app,
-                        ),
-                        onPressed: () async {
-                          await Provider.of<Auth>(context).signOut();
-                          _logoutError =
-                              Provider.of<Auth>(context).getErrorMessage;
-                          if (_logoutError == null) {
-                            // _isInit = true;
-                            Provider.of<Products>(context).clearReceivedReq();
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                                AuthScreen.routeName, (_) => false);
-                          }
-                        },
-                        tooltip: 'Logout',
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                    ],
-                  )),
-              body: Stack(
-                children: <Widget>[
-                  _buildOffstageNavigator(0),
-                  _buildOffstageNavigator(1),
-                  _buildOffstageNavigator(2),
-                  _buildOffstageNavigator(3),
+    return WillPopScope(
+        onWillPop: () {
+          if (_selectedIndex != 0) {
+            setState(() {
+              _selectedIndex = 0;
+            });
+            return new Future(() => false);
+          }
+          return new Future(() => true);
+        },
+        child: Scaffold(
+          backgroundColor: getBgColor(),
+          appBar: PreferredSize(
+              preferredSize: Size.fromHeight(38),
+              child: AppBar(
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.exit_to_app,
+                      color: Colors.black,
+                    ),
+                    onPressed: () async {
+                      await _userViewModel.signOut();
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => AuthScreen()),
+                          (route) => false);
+                    },
+                    tooltip: 'Logout',
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
                 ],
+              )),
+          body: Stack(
+            children: <Widget>[
+              _buildOffstageNavigator(0),
+              _buildOffstageNavigator(1),
+              _buildOffstageNavigator(2),
+              _buildOffstageNavigator(3),
+            ],
+          ),
+          bottomNavigationBar: SalomonBottomBar(
+            currentIndex: _selectedIndex,
+            onTap: (i) => setState(() => _selectedIndex = i),
+            items: [
+              /// Home
+              SalomonBottomBarItem(
+                icon: Icon(Icons.home, color: Colors.black),
+                title: Text(
+                  "Home",
+                  style: TextStyle(color: Colors.black),
+                ),
+                selectedColor: HOME_BOTTOM_BAR_COLOR,
               ),
-              bottomNavigationBar: BottomNavigationBar(
-                items: [
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.home), title: Text('Home')),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.mood), title: Text('My Products')),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.notifications_none),
-                      title: Text('Notifications')),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.add_circle_outline),
-                      title: Text('Add Product')),
-                ],
-                type: BottomNavigationBarType.fixed,
-                currentIndex: _selectedIndex,
-                onTap: (idx) {
-                  setState(() {
-                    _selectedIndex = idx;
-                  });
-                },
+
+              /// My Products
+              SalomonBottomBarItem(
+                icon: Icon(Icons.person, color: Colors.black),
+                title:
+                    Text("My Products", style: TextStyle(color: Colors.black)),
+                selectedColor: MY_PRODUCTS_BOTTOM_BAR_COLOR,
               ),
-            ));
+
+              /// Notifications
+              SalomonBottomBarItem(
+                icon: Icon(Icons.notifications, color: Colors.black),
+                title: Text("Notifications",
+                    style: TextStyle(color: Colors.black)),
+                selectedColor: NOTIFICATIONS_BOTTOM_BAR_COLOR,
+              ),
+
+              /// Add Products
+              SalomonBottomBarItem(
+                icon: Icon(Icons.add, color: Colors.black),
+                title:
+                    Text("Add Product", style: TextStyle(color: Colors.black)),
+                selectedColor: ADD_PRODUCT_BOTTOM_BAR_COLOR,
+              ),
+            ],
+          ),
+        ));
   }
 }

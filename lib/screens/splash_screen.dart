@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ent_new/view_models/user_model.dart';
 import 'package:flutter/material.dart';
-import '../providers/auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/scheduler.dart';
 import '../screens/auth_screen.dart';
-import 'package:provider/provider.dart';
 import './overview_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,41 +11,32 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
+  Future _initLogic;
   void initState() {
-    FirebaseAuth.instance.currentUser().then((user) {
-      if (user == null) {
-        AuthData auth = new AuthData(
-            userId: null,
-            errorMessage: null,
-            userAddress: null,
-            userMobile: null,
-            userName: null);
-        Provider.of<Auth>(context).onNewAuth(auth);
-        Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
-      } else {
-        Firestore.instance
-            .collection("users")
-            .document(user.uid)
-            .get()
-            .then((DocumentSnapshot result) {
-          AuthData auth = new AuthData(
-              userId: user.uid,
-              errorMessage: null,
-              userAddress: result['address'],
-              userMobile: result['mobNum'],
-              userName: result['name']);
-          Provider.of<Auth>(context).onNewAuth(auth);
-          Navigator.of(context).pushReplacementNamed(OverViewScreen.routeName);
-        });
-      }
-    });
     super.initState();
+    _initLogic = UserViewModel.getInstance().onStartUp();
   }
 
   Widget build(BuildContext context) {
-    print('*********SPLASH SCREEN BUILT***********');
     return Scaffold(
-      body: Center(child: CircularProgressIndicator()),
+      body: FutureBuilder(
+          future: _initLogic,
+          builder: (context, snap) {
+            if (snap.connectionState != ConnectionState.done)
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            bool _signInNotReq = snap.data;
+            SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          _signInNotReq ? OverViewScreen() : AuthScreen()),
+                  (_) => false);
+            });
+
+            return Container();
+          }),
     );
   }
 }
