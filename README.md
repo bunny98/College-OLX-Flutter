@@ -8,6 +8,11 @@ A local rentals app with streaming notifications and UPI payments integrated, sp
 State management is done using [Provider Package](https://pub.dev/packages/provider)  
 Data is stored and retrived from [Google Firebase](https://firebase.google.com/)
 
+## High Level Architecture
+<p align="center">
+   <imge src = "Pictures/CollegeOLXArchitecture.png">
+</p>
+
 ## Screenshots
 
 <p align="center">
