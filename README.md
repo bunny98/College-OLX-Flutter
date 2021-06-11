@@ -10,7 +10,7 @@ Data is stored and retrived from [Google Firebase](https://firebase.google.com/)
 
 ## High Level Architecture
 <p align="center">
-   <imge src = "Pictures/CollegeOLXArchitecture.png">
+   <imge src = "Pictures/CollegeOLXArchitecture.png" height="400">
 </p>
 
 ## Screenshots
